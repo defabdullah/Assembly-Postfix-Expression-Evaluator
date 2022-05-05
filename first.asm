@@ -2,13 +2,11 @@
 	temp dw 0h
 	number db 5 dup 0h	; stores output string
 	count dw 0h
+	start:
+		mov cx,0	 			; cx will hold the current integer
+		mov bl,0      			; bl will be used as counter
+		jmp read_input
 
-	number_finish:
-		mov ah, 0 ; make the top half zero
-		cmp cx,0
-		je read_input
-		push cx ; push number to stack
-		mov cx,0
 	read_input:
 												
 		mov ah, 01h; to read character
@@ -16,7 +14,7 @@
 		mov dx,0 
 		mov dl,al
 		mov ax,cx ;cx hold current value 
-		
+
 		cmp dl,20h ;check space
 		je number_finish
 		
@@ -29,6 +27,19 @@
 		cmp dl, '*' ; check multiply sign
 		je mult_them
 
+		cmp dl, '/' ; check division sign
+		je div_them
+
+		cmp dl, 5eh ; check xor sign
+		je bitwise_xor
+		
+		cmp dl, 7ch ; check or sign
+		je bitwise_or
+		
+		cmp dl, 26h ; check and	sign
+		je bitwise_and
+
+
 		sub dx,'0' ; take actual value
 		mov temp,dx ; last digit will be added
 		
@@ -39,9 +50,19 @@
 		mov ax,0
 		jmp read_input ;loop
 
-	start:
-		mov cx,0	 			; cx will hold the current integer
-		mov bl,0      			; bl will be used as counter
+	setup_string:
+		pop ax
+		mov bx,offset number+4 	; put a $ at end of buffer
+		mov b[bx],"$"			; we will fill buffer from back
+		dec bx
+		jmp convert_hexadecimal
+		
+	number_finish:
+		mov ah, 0 ; make the top half zero
+		cmp cx,0
+		je read_input
+		push cx ; push number to stack
+		mov cx,0
 		jmp read_input
 
 	add_them:
@@ -61,13 +82,44 @@
 		push ax ;take last 2 element multiply  them then push to stack
 		mov ax,0
 		jmp read_input ;continue to read
-
-	setup_string:
+	div_them:
+		mov ah,0
+		mov dx,0
+		pop bx
 		pop ax
-		mov bx,offset number+4 	; put a $ at end of buffer
-		mov b[bx],"$"			; we will fill buffer from back
-		dec bx
-    ;this segment may be unneccessary i dont know
+		div bx
+		push ax ;take last 2 element divide them then push to stack
+		mov ax,0
+		jmp read_input ;continue to read
+
+	bitwise_xor:
+		mov ah,0
+		mov dx,0
+		pop bx
+		pop ax
+		xor ax,bx
+		push ax ;take last 2 element xor them then push to stack
+		mov ax,0
+		jmp read_input ;continue to read
+	bitwise_or:
+		mov ah,0
+		mov dx,0
+		pop bx
+		pop ax
+		or ax,bx
+		push ax ;take last 2 element or them then push to stack
+		mov ax,0
+		jmp read_input ;continue to read
+	bitwise_and:
+		mov ah,0
+		mov dx,0
+		pop bx
+		pop ax
+		and ax,bx
+		push ax ;take last 2 element and them then push to stack
+		mov ax,0
+		jmp read_input ;continue to read
+
 	convert_hexadecimal:
 		mov dx,0
 		mov cx,10h
