@@ -1,5 +1,6 @@
 jmp start   
 temp dw 0h
+cr     dw 10, 13, "$"			; carriage return, line feed
 number db 5 dup 0h	; stores output string
 count dw 0h
 
@@ -150,6 +151,11 @@ convert_hexadecimal_second_part:
 	inc count
 	cmp count,04h			; check if we have got all digits
 	jnz convert_hexadecimal
+
+print_cr:
+	mov ah,09
+	mov dx,offset cr		; print out a carriage return character
+	int 21h
 
 print_out:
 	mov dx,bx				; give the address of string to dx
