@@ -67,7 +67,7 @@
 		mov bx,offset number+4 	; put a $ at end of buffer
 		mov b[bx],"$"			; we will fill buffer from back
 		dec bx
-
+    ;this segment may be unneccessary i dont know
 	convert_hexadecimal:
 		mov dx,0
 		mov cx,10h
