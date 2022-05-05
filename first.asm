@@ -37,18 +37,28 @@ read_input:
 	je bitwise_or
 	
 	cmp dl, 26h ; check and	sign
-	je bitwise_and
+	je bitwise_and_help
 
+	cmp dl,58
+	jb substract_zero
+	ja substract_a
 
-	sub dx,'0' ; take actual value
+read_input_second:
 	mov temp,dx ; last digit will be added
-	
 	mov cx,10h 
 	mul cx ; digit shift to left
 	add ax,temp ;add last digit
 	mov cx,ax ;hold current value
 	mov ax,0
 	jmp read_input ;loop
+
+substract_zero:
+	sub dx,'0' ; take actual value
+	jmp read_input_second
+
+substract_a:
+	sub dx,55d ; take actual value
+	jmp read_input_second
 
 setup_string:
 	pop ax
@@ -103,6 +113,9 @@ bitwise_xor:
 	mov ax,0
 	jmp read_input ;continue to read
 
+bitwise_and_help:
+	jmp bitwise_and
+
 bitwise_or:
 	mov ah,0
 	mov dx,0
@@ -126,9 +139,12 @@ bitwise_and:
 convert_hexadecimal:
 	mov dx,0
 	mov cx,10h
-	div cx					; divide ax (i.e. current number) by 10 to get the last digit
-	add dx,48d  			; convert remainder (last digit) to its ASCII representation
-							;(this part will be changed according to A,B,C,D)
+	div cx
+	cmp dx,10d
+	jb add_zero 
+	jae add_a				
+
+convert_hexadecimal_second_part:
 	mov [bx],dl				; and move to buffer for output
 	dec bx
 	inc count
@@ -145,3 +161,11 @@ exit:
 	mov ah, 04ch
 	mov al, 00
 	int 21h
+
+add_zero:
+	add dx,48d 
+	jmp convert_hexadecimal_second_part
+
+add_a:
+	add dx,55d 
+	jmp convert_hexadecimal_second_part
