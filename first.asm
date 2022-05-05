@@ -40,9 +40,9 @@ read_input:
 	cmp dl, 26h ; check and	sign
 	je bitwise_and_help
 
-	cmp dl,58
-	jb substract_zero
-	ja substract_a
+	cmp dl,58 ; check if digit is greater than "9" 
+	jb substract_zero ; get digits numerical value from ascii value if it is in the range ("0","9")
+	ja substract_a ;  get digits numerical value from ascii value if it is in the range ("A","F")
 
 read_input_second:
 	mov temp,dx ; last digit will be added
@@ -55,7 +55,7 @@ read_input_second:
 
 substract_zero:
 	sub dx,'0' ; take actual value
-	jmp read_input_second
+	jmp read_input_second 
 
 substract_a:
 	sub dx,55d ; take actual value
@@ -141,9 +141,9 @@ convert_hexadecimal:
 	mov dx,0
 	mov cx,10h
 	div cx
-	cmp dx,10d
-	jb add_zero 
-	jae add_a				
+	cmp dx,10d ;check if digit is greater than 9 
+	jb add_zero ;get digits ascii value from numerical value if it is in the range (0,9)
+	jae add_a 	;get digits ascii value from numerical value if it is in the range (A,F)
 
 convert_hexadecimal_second_part:
 	mov [bx],dl				; and move to buffer for output
@@ -169,9 +169,9 @@ exit:
 	int 21h
 
 add_zero:
-	add dx,48d 
+	add dx,48d ;get digits ascii value from numerical value if it is in the range (0,9)
 	jmp convert_hexadecimal_second_part
 
 add_a:
-	add dx,55d 
+	add dx,55d ;get digits ascii value from numerical value if it is in the range (A,F)
 	jmp convert_hexadecimal_second_part
