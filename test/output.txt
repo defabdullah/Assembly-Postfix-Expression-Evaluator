@@ -2,7 +2,11 @@
 00FA
 FFF8
 12DC
+patlak
 0000
+patlak
 AAA
-04E6
+patlak
+patlak
 0031
+patlak

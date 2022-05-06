@@ -30,6 +30,7 @@ def to_dec(num):
     return result
 
 for text in texts:
+    patlak=False
     word_list=text.split()
     length=len(word_list)
 
@@ -65,8 +66,13 @@ for text in texts:
 
             if plus is not None:
                 list.append(plus)
-
-    results.append(to_hex(list.pop()))
+                if plus>65535:
+                    patlak=True
+    if patlak:
+        results.append("patlak")
+        patlak=False
+    else:
+        results.append(to_hex(list.pop()))
 out.writelines("%s\n" % l for l in results)
 inp.close()
 out.close()
