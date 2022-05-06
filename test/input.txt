@@ -2,11 +2,7 @@
 A B C + 2 + *
 1 2 4 + + FFFF ^
 29 73 * B7 ^ 0 +
-BCBC 05 * 46 / BC ^ BC BC BC + + + #0472 ##first expression is bigger than 16 bit
 0 0 + 0 * 1 2 + /
-ABCD 96 / 292 * 42 + 10 /  #0F15   ##first expression is bigger than 16 bit
 AAA
-0000 000 + 02 0 + +  4 ^ 99  99 * * AAAA +  ##last expression is bigger than 16 bit
 83 12B & 090 + 542 *
 BA A99 | C21 | 8 9 + + 99 2 / /
-FFF AB / ABC + 20 * 12  23 ^ |  
