@@ -99,6 +99,7 @@ set_result:
 	push cx
 
 setup_string:
+	pop ax
 	mov bx,offset number+4 	; put a $ at end of buffer
 	mov b[bx],"$"			; we will fill buffer from back
 	dec bx
