@@ -3,11 +3,40 @@ temp dw 0h
 cr     dw 10, 13, "$"			; carriage return, line feed
 number db 5 dup 0h	; stores output string
 count dw 0h
+operator_bool db 0h ; store last element is operator
 
 start:
 	mov cx,0	 			; cx will hold the current integer
 	mov bl,0      			; bl will be used as counter
 	jmp read_input
+
+add_them:
+	mov operator_bool,1h
+	pop ax 
+	pop dx  
+	add ax,dx  
+	push ax  ;take last 2 element and add them then push to stack
+	mov ax,0
+	jmp read_input ;continue to read
+
+mult_them:
+	mov operator_bool,1h
+	pop ax
+	pop dx
+	mul dx
+	push ax ;take last 2 element multiply  them then push to stack
+	mov ax,0
+	jmp read_input ;continue to read
+
+div_them:
+	mov operator_bool,1h
+	mov dx,0
+	pop bx
+	pop ax
+	div bx
+	push ax ;take last 2 element divide them then push to stack
+	mov ax,0
+	jmp read_input ;continue to read
 
 read_input:			
 	mov ah, 01h; to read character
@@ -39,6 +68,8 @@ read_input:
 	
 	cmp dl, 26h ; check and	sign
 	je bitwise_and_help
+	
+	mov operator_bool,0h
 
 	cmp dl,58 ; check if digit is greater than "9" 
 	jb substract_zero ; get digits numerical value from ascii value if it is in the range ("0","9")
@@ -54,6 +85,7 @@ read_input_second:
 	jmp read_input ;loop
 
 substract_zero:
+
 	sub dx,'0' ; take actual value
 	jmp read_input_second 
 
@@ -70,42 +102,13 @@ setup_string:
 	
 number_finish:
 	mov ah, 0 ; make the top half zero
-	cmp cx,0
+	cmp operator_bool,1h
 	je read_input
 	push cx ; push number to stack
 	mov cx,0
 	jmp read_input
-
-add_them:
-	mov ah, 0 ;
-	pop ax 
-	pop dx  
-	add ax,dx  
-	push ax  ;take last 2 element and add them then push to stack
-	mov ax,0
-	jmp read_input ;continue to read
-
-mult_them:
-	mov ah, 0 ;
-	pop ax
-	pop dx
-	mul dx
-	push ax ;take last 2 element multiply  them then push to stack
-	mov ax,0
-	jmp read_input ;continue to read
-
-div_them:
-	mov ah,0
-	mov dx,0
-	pop bx
-	pop ax
-	div bx
-	push ax ;take last 2 element divide them then push to stack
-	mov ax,0
-	jmp read_input ;continue to read
-
 bitwise_xor:
-	mov ah,0
+	mov operator_bool,1h
 	mov dx,0
 	pop bx
 	pop ax
@@ -118,7 +121,7 @@ bitwise_and_help:
 	jmp bitwise_and
 
 bitwise_or:
-	mov ah,0
+	mov operator_bool,1h
 	mov dx,0
 	pop bx
 	pop ax
@@ -128,7 +131,7 @@ bitwise_or:
 	jmp read_input ;continue to read
 
 bitwise_and:
-	mov ah,0
+	mov operator_bool,1h
 	mov dx,0
 	pop bx
 	pop ax
