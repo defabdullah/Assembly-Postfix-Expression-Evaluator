@@ -49,7 +49,7 @@ read_input:
 	je number_finish
 	
 	cmp dl, 0dh ; check enter
-	je setup_string
+	je set_result
 	
 	cmp dl, '+' ; check plus sign
 	je add_them
@@ -93,8 +93,12 @@ substract_a:
 	sub dx,55d ; take actual value
 	jmp read_input_second
 
+set_result:
+	cmp operator_bool,1h
+	je setup_string
+	push cx
+
 setup_string:
-	pop ax
 	mov bx,offset number+4 	; put a $ at end of buffer
 	mov b[bx],"$"			; we will fill buffer from back
 	dec bx
