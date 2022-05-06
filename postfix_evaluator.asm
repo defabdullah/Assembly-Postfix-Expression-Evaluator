@@ -4,7 +4,8 @@ cr     dw 10, 13, "$"			; carriage return, line feed
 number db 5 dup 0h	; stores output string
 count dw 0h
 operator_bool db 0h ; store last element is operator
-
+just_var db 1h ; control input is just one element without space
+ 
 start:
 	mov cx,0	 			; cx will hold the current integer
 	mov bl,0      			; bl will be used as counter
@@ -85,7 +86,6 @@ read_input_second:
 	jmp read_input ;loop
 
 substract_zero:
-
 	sub dx,'0' ; take actual value
 	jmp read_input_second 
 
@@ -94,7 +94,7 @@ substract_a:
 	jmp read_input_second
 
 set_result:
-	cmp operator_bool,1h
+	cmp just_var,0h
 	je setup_string
 	push cx
 
@@ -106,6 +106,7 @@ setup_string:
 	jmp convert_hexadecimal
 	
 number_finish:
+	mov just_var,0h 
 	mov ah, 0 ; make the top half zero
 	cmp operator_bool,1h
 	je read_input
