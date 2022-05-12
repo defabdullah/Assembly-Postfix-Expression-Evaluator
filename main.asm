@@ -6,14 +6,14 @@ count dw 0h    ;current output counter which stops at 4
 operator_bool db 0h ; boolean which store is last element operator
 just_var db 1h ; control input is just one element without space it set to 0 when see space
  
-start: ;1
+start:
 	mov ax,0	 			; ax is accumulator register
 	mov cx,0	 			; cx will hold the current integer
 	mov dx,0	 			; dx will be using in operations
 	jmp read_input
 
 ;take last 2 element and add them then push to stack
-addition: ;4
+addition:
 	mov operator_bool,1h ;set operator bool to true
 	pop ax 
 	pop dx  
@@ -23,7 +23,7 @@ addition: ;4
 	jmp read_input ;continue to read
 
 ;take last 2 element multiply  them then push to stack
-multiplication: ;5
+multiplication:
 	mov operator_bool,1h ;set operator bool to true
 	pop ax
 	pop dx
@@ -33,7 +33,7 @@ multiplication: ;5
 	jmp read_input ;continue to read
 
 ;take last 2 element divide them then push to stack
-division: ;6
+division:
 	mov operator_bool,1h ;set operator bool to true
 	mov dx,0
 	pop bx
@@ -43,7 +43,7 @@ division: ;6
 	mov ax,0
 	jmp read_input ;continue to read
 
-read_input:	;2		
+read_input:
 	mov ah, 01h; to read character
 	int 21h
 	mov dx,0 
@@ -80,7 +80,7 @@ read_input:	;2
 	ja letter_actual_value;  get digits numerical value from ascii value if it is in the range ("A","F")
 
 ;add last digit actual value to current number
-add_last_digit_or_letter: ;3
+add_last_digit_or_letter:
 	mov temp,dx ; last digit will be added
 	mov cx,10h 
 	mul cx ; digit shift to left
@@ -90,23 +90,23 @@ add_last_digit_or_letter: ;3
 	jmp read_input ;continue to read
 
 ;turn char to numeric value in hexadecimal format(if it is digit)
-digit_actual_value: ;18
+digit_actual_value:
 	sub dx,'0' ; take actual value
 	jmp add_last_digit_or_letter ;continue to add last digit actual value to current number
 
 ;turn char to numeric value in hexadecimal format(if it is letter)
-letter_actual_value: ;19
+letter_actual_value:
 	sub dx,55d ; take actual value
 	jmp add_last_digit_or_letter ;continue to add last digit actual value to current number
 
 ;control input is just variable without space and push current number in that case 
-set_result: ;10
+set_result:
 	cmp just_var,0h
 	je setup_string
 	push cx
 
 ;set the empty 5 byte string with $ end
-setup_string: ;11
+setup_string:
 	pop ax
 	mov bx,offset number+4 	; put a $ at end of buffer
 	mov b[bx],"$"			; we will fill buffer from back
@@ -114,7 +114,7 @@ setup_string: ;11
 	jmp convert_hexadecimal
 
 ;when space is entered this label push all number to stack
-number_finish: ;12
+number_finish:
 	mov just_var,0h 
 	cmp operator_bool,1h ;if last input then it doesn't push to stack 
 	je read_input
@@ -123,7 +123,7 @@ number_finish: ;12
 	jmp read_input
 
 ;take last 2 element xor them then push to stack
-bitwise_xor: ;7
+bitwise_xor:
 	mov operator_bool,1h ;set operator bool to true
 	mov dx,0
 	pop dx
@@ -133,11 +133,11 @@ bitwise_xor: ;7
 	mov ax,0
 	jmp read_input ;continue to read
 
-bitwise_and_starter: ;15
+bitwise_and_starter:
 	jmp bitwise_and
 
 ;take last 2 element or them then push to stack
-bitwise_or: ;8
+bitwise_or:
 	mov operator_bool,1h ;set operator bool to true
 	mov dx,0
 	pop dx
@@ -148,7 +148,7 @@ bitwise_or: ;8
 	jmp read_input ;continue to read
 
 ;take last 2 element and them then push to stack
-bitwise_and: ;9
+bitwise_and:
 	mov operator_bool,1h ;set operator bool to true
 	mov dx,0
 	pop dx
@@ -159,7 +159,7 @@ bitwise_and: ;9
 	jmp read_input ;continue to read
 
 ;get last character of string and turn ascii value of its char
-convert_hexadecimal: ;13
+convert_hexadecimal:
 	mov dx,0
 	mov cx,10h
 	div cx
@@ -168,7 +168,7 @@ convert_hexadecimal: ;13
 	jae get_letter_ascii 	;get digits ascii value from numerical value if it is in the range (A,F)
 
 ;add real ascii value to string and move iterator
-assign_char_to_output: ;14
+assign_char_to_output:
 	mov [bx],dl				; and move to buffer for output
 	dec bx
 	inc count
@@ -176,30 +176,30 @@ assign_char_to_output: ;14
 	jnz convert_hexadecimal
 
 ;print newline character
-print_newline: ;16
+print_cr:
 	mov ah,09
 	mov dx,offset newline		; print out a carriage return character
 	int 21h
 
 ;print result(in bx register)
-print_out: ;17
+print_out:
 	mov dx,bx				; give the address of string to dx
 	inc dx					; we decremented once too many, go forward one
 	mov ah,09
 	int 21h
 	
 ;exit program
-exit: ;22
+exit:
 	mov ah, 04ch
 	mov al, 00
 	int 21h
 
 ;get digits ascii value from numerical value if it is in the range (0,9)
-get_digit_ascii: ;20
+get_digit_ascii:
 	add dx,48d 
 	jmp assign_char_to_output ;continue to create result string
 
 ;get digits ascii value from numerical value if it is in the range (A,F)
-get_letter_ascii: ;21
+get_letter_ascii:
 	add dx,55d 
 	jmp assign_char_to_output ;continue to create result string
